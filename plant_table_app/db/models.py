@@ -15,7 +15,7 @@ Base = declarative_base()
 
 # Sets up a link table with activity_id and person_id as foreign keys
 # Base.metadata is a container object that keeps together many different features of the database
-pest_light = Table('person_activity',
+plant_pest = Table('plant_pest',
                    Base.metadata,
                    Column('id', Integer, primary_key=True),
                    Column('plant_id', ForeignKey('plant.id')),
@@ -31,9 +31,11 @@ class Plant(Base):
     name = Column(String, unique=True, nullable=False)
     chem_remove_val = Column(Integer, nullable=False)
     ease_of_growth = Column(Integer, nullable=False)
-    care_instructions = Column(Integer)
+    care_instructions = Column(String, default="")
+    min_temp = Column(Integer, default=15)
+    max_temp = Column(Integer, default=25)
     pests = relationship("Pest",
-                         secondary=pest_light,
+                         secondary=plant_pest,
                          back_populates="plants")
 
     # Add an ordering above if necessary
@@ -50,10 +52,10 @@ class Pest(Base):
     name = Column(String, nullable=False)
     solution = Column(String, nullable=False)
     plants = relationship("Plant",
-                              secondary=pest_light,
-                              order_by='Plant.name',
-                              back_populates="attendees")
+                          secondary=plant_pest,
+                          order_by='Plant.name',
+                          back_populates="pests")
 
     # Gives a representation of a Person (for printing out)
     def __repr__(self):
-        return f"<Person({self.first_name} {self.last_name})>"
+        return f"<Pest({self.name})>"

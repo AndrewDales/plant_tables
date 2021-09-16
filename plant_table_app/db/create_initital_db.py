@@ -25,7 +25,26 @@ def create_new_db():
     return sessionmaker(bind=engine)
 
 
+def populate_database(sess):
+    # Create new plants
+    plants = [m.Plant(name="daffodil",
+                      chem_remove_val=4,
+                      ease_of_growth=7,
+                      care_instructions="Plant bulb in October")
+              ]
+    # Create some pests
+    pests = [m.Pest(name="mealybug",
+                    solution="wipe leaves with detergent")
+             ]
+
+    # Add relationships
+    plants[0].pests.append(pests[0])
+
+    sess.add_all(plants + pests)
+    sess.commit()
+
+
 if __name__ == "__main__":
     Session = create_new_db()
-
-
+    with Session() as session:
+        populate_database(session)
