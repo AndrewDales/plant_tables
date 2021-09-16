@@ -15,39 +15,43 @@ Base = declarative_base()
 
 # Sets up a link table with activity_id and person_id as foreign keys
 # Base.metadata is a container object that keeps together many different features of the database
-person_activity = Table('person_activity',
-                        Base.metadata,
-                        Column('id', Integer, primary_key=True),
-                        Column('activity_id', ForeignKey('activity.id')),
-                        Column('person_id', ForeignKey('person.id')),
-                        UniqueConstraint('activity_id', 'person_id')
-                        )
+pest_light = Table('person_activity',
+                   Base.metadata,
+                   Column('id', Integer, primary_key=True),
+                   Column('plant_id', ForeignKey('plant.id')),
+                   Column('pest_id', ForeignKey('pest.id')),
+                   UniqueConstraint('pest_id', 'pest_id')
+                   )
 
 
-# Sets up an Activity table, this references "attendees" via the person_activities table
-class Activity(Base):
-    __tablename__ = 'activity'
+# Sets up Plant table, this references "pests" via the pest_light table
+class Plant(Base):
+    __tablename__ = 'plant'
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, unique=True, nullable=False)
-    attendees = relationship("Person",
-                             secondary=person_activity,
-                             order_by='(Person.last_name, Person.first_name)',
-                             back_populates="activities")
+    chem_remove_val = Column(Integer, nullable=False)
+    ease_of_growth = Column(Integer, nullable=False)
+    care_instructions = Column(Integer)
+    pests = relationship("Pest",
+                         secondary=pest_light,
+                         back_populates="plants")
 
+    # Add an ordering above if necessary
+    #                         order_by='(Person.last_name, Person.first_name)',
     # Gives a representation of an Activity (for printing out)
     def __repr__(self):
-        return f"<Activity({self.name})>"
+        return f"<Plant({self.name})>"
 
 
 # Sets up a Person table, this references "activities" via the person_activities table
-class Person(Base):
-    __tablename__ = 'person'
+class Pest(Base):
+    __tablename__ = 'pest'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    first_name = Column(String, nullable=False)
-    last_name = Column(String, nullable=False)
-    activities = relationship("Activity",
-                              secondary=person_activity,
-                              order_by='Activity.name',
+    name = Column(String, nullable=False)
+    solution = Column(String, nullable=False)
+    plants = relationship("Plant",
+                              secondary=pest_light,
+                              order_by='Plant.name',
                               back_populates="attendees")
 
     # Gives a representation of a Person (for printing out)
