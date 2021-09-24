@@ -34,11 +34,14 @@ def populate_database(sess):
               ]
     # Create some pests
     pests = [m.Pest(name="mealybug",
-                    solution="wipe leaves with detergent")
+                    solution="wipe leaves with detergent"),
+             m.Pest(name="slug",
+                    solution="sprinkle coffee grounds")
              ]
 
     # Add relationships
-    plants[0].pests.append(pests[0])
+    plants[0].pests.append(pests[0])            #TODO append all pests at once
+    plants[0].pests.append(pests[1])
 
     sess.add_all(plants + pests)
     sess.commit()
